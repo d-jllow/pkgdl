@@ -20,25 +20,31 @@ jobs:
       with:
         python-version: '3.9'  # You can change this version as needed
 
-    # Step 3: Install dependencies from the manually created requirements.txt
-    - name: Install dependencies
+    # Step 3: Create and activate the virtual environment
+    - name: Create virtual environment
       run: |
         python -m venv venv  # Create a virtual environment
         .\venv\Scripts\activate  # Activate the virtual environment
-        pip install -r requirements.txt  # Install dependencies from the manually created requirements.txt
 
-    # Step 4: Generate/update the requirements.txt file with the installed dependencies
+    # Step 4: Install dependencies from the manually created requirements.txt
+    - name: Install dependencies
+      run: |
+        .\venv\Scripts\activate  # Activate the virtual environment
+        pip install --upgrade pip  # Ensure pip is up-to-date
+        pip install -r $GITHUB_WORKSPACE/requirements.txt  # Install dependencies from the requirements.txt
+
+    # Step 5: Generate and update the requirements.txt file with the installed dependencies
     - name: Generate and update requirements.txt
       run: |
         .\venv\Scripts\activate  # Activate the virtual environment
-        pip freeze > requirements.txt  # Update the requirements.txt file with the installed packages
+        pip freeze > $GITHUB_WORKSPACE/requirements.txt  # Update the requirements.txt file with the installed packages
 
-    # Step 5: Commit and push the updated requirements.txt file to the repository
+    # Step 6: Commit and push the updated requirements.txt file to the repository
     - name: Commit and push updated requirements.txt
       run: |
         git config --global user.name "Your Name"  # Replace with your GitHub username
         git config --global user.email "youremail@example.com"  # Replace with your email address
-        git add requirements.txt  # Stage the updated requirements.txt file
+        git add $GITHUB_WORKSPACE/requirements.txt  # Stage the updated requirements.txt file
         git commit -m "Update requirements.txt with installed dependencies"  # Commit the change
         git push  # Push the updated file back to GitHub
       env:
