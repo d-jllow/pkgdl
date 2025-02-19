@@ -3,6 +3,9 @@ name: Python Windows Setup
 on:
   workflow_dispatch:  # Allows manual triggering from GitHub UI
 
+permissions:
+  contents: write
+  
 jobs:
   build:
     runs-on: windows-latest  # This will use a Windows runner for your workflow
