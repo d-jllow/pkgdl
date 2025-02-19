@@ -48,13 +48,11 @@ jobs:
         .\venv\Scripts\activate  # Activate the virtual environment
         pip freeze > requirements.txt  # Update the requirements.txt file with the installed packages
 
-    # Step 6: Commit and push updated requirements.txt file
+    # Step 6: Commit and push the updated requirements.txt file
     - name: Commit and push updated requirements.txt
       run: |
         git config --global user.name "Your Name"  # Replace with your GitHub username
         git config --global user.email "youremail@example.com"  # Replace with your email address
-        git add requirements.txt  # Stage the updated requirements.txt file
+        git add $GITHUB_WORKSPACE/requirements.txt  # Stage the updated requirements.txt file
         git commit -m "Update requirements.txt with installed dependencies"  # Commit the change
-        git push https://github.com/${{ github.repository }}.git HEAD:main  # Push the change using the GITHUB_TOKEN
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub automatically provides this token for authentication
+        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main  # Push the change
