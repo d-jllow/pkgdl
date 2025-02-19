@@ -46,13 +46,13 @@ jobs:
     - name: Generate and update requirements.txt
       run: |
         .\venv\Scripts\activate  # Activate the virtual environment
-        pip freeze > requirements.txt  # Update the requirements.txt file with the installed packages
+        pip freeze > requirements_py.txt  # Update the requirements.txt file with the installed packages
 
     # Step 6: Commit and push the updated requirements.txt file
-    - name: Commit and push updated requirements.txt
+    - name: Commit and push updated requirements_py.txt
       run: |
         git config --global user.name d-jllow  # Replace with your GitHub username
         git config --global user.email dos.jllow@gmail.com  # Replace with your email address
         git add ./requirements_py.txt  # Stage the updated requirements.txt file
-        git commit -m "Update requirements.txt with installed dependencies"  # Commit the change
+        git commit -m "Update requirements_py.txt with installed dependencies"  # Commit the change
         git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main  # Push the change
