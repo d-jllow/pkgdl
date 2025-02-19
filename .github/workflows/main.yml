@@ -46,6 +46,4 @@ jobs:
         git config --global user.email "youremail@example.com"  # Replace with your email address
         git add $GITHUB_WORKSPACE/requirements.txt  # Stage the updated requirements.txt file
         git commit -m "Update requirements.txt with installed dependencies"  # Commit the change
-        git push  # Push the updated file back to GitHub
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub automatically provides this token for authentication
+        git push https://github.com/${{ github.repository }}.git HEAD:main  # Push the change
