@@ -5,7 +5,7 @@ on:
 
 permissions:
   contents: write
-  
+
 jobs:
   build:
     runs-on: windows-latest  # This will use a Windows runner for your workflow
@@ -19,40 +19,40 @@ jobs:
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'  # You can change this version as needed
+        python-version: '3.9'
 
-    # Step 3: Clean up the virtual environment if it exists, and create a new one
+    # Step 3: Create virtual environment
     - name: Create virtual environment
       run: |
         if (Test-Path venv) {
-          Remove-Item -Recurse -Force venv  # Delete venv if it exists
+          Remove-Item -Recurse -Force venv
         }
-        python -m venv venv  # Create a new virtual environment
-        .\venv\Scripts\activate  # Activate the virtual environment
+        python -m venv venv
+        .\venv\Scripts\activate
 
-    # Step 4: Print directory structure to debug the location of requirements.txt
+    # Step 4: Debug - List directory structure
     - name: List directory structure
-      run: |
-        echo "Current directory structure:"
-        Get-ChildItem -Recurse  # PowerShell command to list files in the directory
+      run: Get-ChildItem -Recurse
 
-    # Step 5: Install dependencies from the manually created requirements.txt
-    - name: Install dependencies
+    # Step 5: Download dependencies instead of installing them
+    - name: Download Python packages
       run: |
-        .\venv\Scripts\activate  # Activate the virtual environment
-        pip install -r requirements.txt  # Directly reference requirements.txt in the root directory
+        .\venv\Scripts\activate
+        mkdir wheelhouse
+        pip download -r requirements.txt --dest=wheelhouse
 
-    # Step 6: Generate and update requirements.txt file
-    - name: Generate and update requirements.txt
-      run: |
-        .\venv\Scripts\activate  # Activate the virtual environment
-        pip freeze > requirements_py.txt  # Update the requirements.txt file with the installed packages
+    # Step 6: Upload downloaded packages as an artifact
+    - name: Upload wheelhouse
+      uses: actions/upload-artifact@v3
+      with:
+        name: python-packages
+        path: wheelhouse/
 
-    # Step 6: Commit and push the updated requirements.txt file
-    - name: Commit and push updated requirements_py.txt
+    # Step 7: Commit and push updated requirements.txt (optional)
+    - name: Commit and push updated requirements.txt
       run: |
-        git config --global user.name d-jllow  # Replace with your GitHub username
-        git config --global user.email dos.jllow@gmail.com  # Replace with your email address
-        git add ./requirements_py.txt  # Stage the updated requirements.txt file
-        git commit -m "Update requirements_py.txt with installed dependencies"  # Commit the change
-        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main  # Push the change
+        git config --global user.name "d-jllow"
+        git config --global user.email "dos.jllow@gmail.com"
+        git add ./requirements.txt
+        git commit -m "Update requirements.txt with installed dependencies"
+        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
