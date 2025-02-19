@@ -27,19 +27,25 @@ jobs:
         python -m venv venv  # Create a new virtual environment
         .\venv\Scripts\activate  # Activate the virtual environment
 
-    # Step 4: Install dependencies from the manually created requirements.txt
+    # Step 4: Print directory structure to debug the location of requirements.txt
+    - name: List directory structure
+      run: |
+        echo "Current directory structure:"
+        dir /s  # Windows command to list files in the directory
+
+    # Step 5: Install dependencies from the manually created requirements.txt
     - name: Install dependencies
       run: |
         .\venv\Scripts\activate  # Activate the virtual environment
         pip install -r $GITHUB_WORKSPACE/requirements.txt  # Use $GITHUB_WORKSPACE to correctly reference the path to requirements.txt
 
-    # Step 5: Generate and update requirements.txt file
+    # Step 6: Generate and update requirements.txt file
     - name: Generate and update requirements.txt
       run: |
         .\venv\Scripts\activate  # Activate the virtual environment
         pip freeze > $GITHUB_WORKSPACE/requirements.txt  # Update the requirements.txt file with the installed packages
 
-    # Step 6: Commit and push the updated requirements.txt file
+    # Step 7: Commit and push the updated requirements.txt file
     - name: Commit and push updated requirements.txt
       run: |
         git config --global user.name "Your Name"  # Replace with your GitHub username
