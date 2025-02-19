@@ -18,10 +18,13 @@ jobs:
       with:
         python-version: '3.9'  # You can change this version as needed
 
-    # Step 3: Create virtual environment
+    # Step 3: Clean up the virtual environment if it exists, and create a new one
     - name: Create virtual environment
       run: |
-        python -m venv venv  # Create a virtual environment
+        if (Test-Path venv) {
+          Remove-Item -Recurse -Force venv  # Delete venv if it exists
+        }
+        python -m venv venv  # Create a new virtual environment
         .\venv\Scripts\activate  # Activate the virtual environment
 
     # Step 4: Install dependencies from the manually created requirements.txt
