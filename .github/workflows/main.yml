@@ -27,11 +27,11 @@ jobs:
         python -m venv venv  # Create a new virtual environment
         .\venv\Scripts\activate  # Activate the virtual environment
 
-  # Step 4: Print directory structure to debug the location of requirements.txt
-  - name: List directory structure
-    run: |
-      echo "Current directory structure:"
-      Get-ChildItem -Recurse  # PowerShell command to list files in the directory
+    # Step 4: Print directory structure to debug the location of requirements.txt
+    - name: List directory structure
+      run: |
+        echo "Current directory structure:"
+        Get-ChildItem -Recurse  # PowerShell command to list files in the directory
 
     # Step 5: Install dependencies from the manually created requirements.txt
     - name: Install dependencies
