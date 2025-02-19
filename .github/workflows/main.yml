@@ -1,0 +1,45 @@
+name: Python Windows Setup
+
+on:
+  push:
+    branches:
+      - main  # You can change this to your branch name (e.g., master or any other)
+
+jobs:
+  build:
+    runs-on: windows-latest  # This will use a Windows runner for your workflow
+
+    steps:
+    # Step 1: Checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    # Step 2: Set up Python 3.9 (or the version of your choice)
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'  # You can change this version as needed
+
+    # Step 3: Install dependencies from the manually created requirements.txt
+    - name: Install dependencies
+      run: |
+        python -m venv venv  # Create a virtual environment
+        .\venv\Scripts\activate  # Activate the virtual environment
+        pip install -r requirements.txt  # Install dependencies from the manually created requirements.txt
+
+    # Step 4: Generate/update the requirements.txt file with the installed dependencies
+    - name: Generate and update requirements.txt
+      run: |
+        .\venv\Scripts\activate  # Activate the virtual environment
+        pip freeze > requirements.txt  # Update the requirements.txt file with the installed packages
+
+    # Step 5: Commit and push the updated requirements.txt file to the repository
+    - name: Commit and push updated requirements.txt
+      run: |
+        git config --global user.name "Your Name"  # Replace with your GitHub username
+        git config --global user.email "youremail@example.com"  # Replace with your email address
+        git add requirements.txt  # Stage the updated requirements.txt file
+        git commit -m "Update requirements.txt with installed dependencies"  # Commit the change
+        git push  # Push the updated file back to GitHub
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub automatically provides this token for authentication
