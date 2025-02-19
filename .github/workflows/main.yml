@@ -37,7 +37,7 @@ jobs:
     - name: Install dependencies
       run: |
         .\venv\Scripts\activate  # Activate the virtual environment
-        pip install -r $GITHUB_WORKSPACE/requirements.txt  # Use $GITHUB_WORKSPACE to correctly reference the path to requirements.txt
+        pip install -r requirements.txt  # Directly reference requirements.txt in the root directory
 
     # Step 6: Generate and update requirements.txt file
     - name: Generate and update requirements.txt
