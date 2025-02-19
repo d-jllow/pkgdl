@@ -12,7 +12,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    # Step 2: Set up Python 3.9 (or the version of your choice)
+    # Step 2: Set up Python 3.9
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
@@ -31,16 +31,15 @@ jobs:
     - name: Install dependencies
       run: |
         .\venv\Scripts\activate  # Activate the virtual environment
-        pip install --upgrade pip  # Ensure pip is up-to-date
         pip install -r $GITHUB_WORKSPACE/requirements.txt  # Install dependencies from the requirements.txt
 
-    # Step 5: Generate and update the requirements.txt file with the installed dependencies
+    # Step 5: Generate and update requirements.txt file
     - name: Generate and update requirements.txt
       run: |
         .\venv\Scripts\activate  # Activate the virtual environment
         pip freeze > $GITHUB_WORKSPACE/requirements.txt  # Update the requirements.txt file with the installed packages
 
-    # Step 6: Commit and push the updated requirements.txt file to the repository
+    # Step 6: Commit and push the updated requirements.txt file
     - name: Commit and push updated requirements.txt
       run: |
         git config --global user.name "Your Name"  # Replace with your GitHub username
