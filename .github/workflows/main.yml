@@ -1,9 +1,7 @@
 name: Python Windows Setup
 
 on:
-  push:
-    branches:
-      - main  # You can change this to your branch name (e.g., master or any other)
+  workflow_dispatch:  # Allows manual triggering from GitHub UI
 
 jobs:
   build:
@@ -20,7 +18,7 @@ jobs:
       with:
         python-version: '3.9'  # You can change this version as needed
 
-    # Step 3: Create and activate the virtual environment
+    # Step 3: Create virtual environment
     - name: Create virtual environment
       run: |
         python -m venv venv  # Create a virtual environment
