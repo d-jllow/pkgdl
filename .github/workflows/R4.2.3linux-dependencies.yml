@@ -27,18 +27,18 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev wget curl
 
-      # Download the Apache Arrow APT repository source package dynamically
+        # Download the Apache Arrow APT repository source package dynamically
         wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
 
-      # Install the Apache Arrow APT repository source package
+        # Install the Apache Arrow APT repository source package
         sudo apt install -y ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
 
-      # Update the APT repository list
+        # Update the APT repository list
         sudo apt-get update
 
-      # Install the Apache Arrow C++ development libraries
+        # Install the Apache Arrow C++ development libraries
         sudo apt-get install -y libarrow-dev
-  
+
     # Step 4: Create a library directory for R packages
     - name: Create R package library
       run: mkdir -p r-library
@@ -64,7 +64,7 @@ jobs:
           future({
             pak::pkg_install(readLines("requirements_rlinux.txt"), lib="r-library", dependencies=TRUE)
           })'
-      
+
     # Step 7: Upload downloaded R packages as an artifact
     - name: Upload R package library
       uses: actions/upload-artifact@v4
