@@ -1,0 +1,58 @@
+name: Python Linux Setup
+
+on:
+  workflow_dispatch:  # Allows manual triggering from GitHub UI
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Use Linux runner
+
+    steps:
+    # Step 1: Checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    # Step 2: Set up Python 3.9
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    # Step 3: Create virtual environment
+    - name: Create virtual environment
+      run: |
+        if [ -d "venv" ]; then
+          rm -rf venv  # Delete existing virtual environment if present
+        fi
+        python3 -m venv venv
+        source venv/bin/activate
+
+    # Step 4: Debug - List directory structure
+    - name: List directory structure
+      run: ls -R
+
+    # Step 5: Download Python packages instead of installing them
+    - name: Download Python packages
+      run: |
+        source venv/bin/activate
+        mkdir -p wheelhouse
+        pip download -r requirements_pylinux.txt --dest=wheelhouse
+
+    # Step 6: Upload downloaded Python packages as an artifact
+    - name: Upload wheelhouse
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-packages-linux
+        path: wheelhouse/
+
+    # Step 7: Commit and push updated requirements_pylinux.txt (optional)
+    - name: Commit and push updated requirements_pylinux.txt
+      run: |
+        git config --global user.name "d-jllow"
+        git config --global user.email "dos.jllow@gmail.com"
+        git add ./requirements_pylinux.txt
+        git commit -m "Update requirements_pylinux.txt with installed Python dependencies"
+        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
