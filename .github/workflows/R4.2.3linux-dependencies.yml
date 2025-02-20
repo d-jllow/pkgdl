@@ -54,11 +54,11 @@ jobs:
         restore-keys: |
           r-packages-${{ runner.os }}-
 
-    # Step 6: Install pak and download required R packages as tar.gz files
-    - name: Download R packages as tar.gz
+    # Step 6: Install pak and download required R packages as tar.gz files with dependencies
+    - name: Download R packages as tar.gz with dependencies
       run: |
         Rscript -e 'install.packages("pak", repos="https://cloud.r-project.org")'
-        Rscript -e 'pak::pkg_download(readLines("requirements_rlinux.txt"), dest="r-packages-tar")'
+        Rscript -e 'pak::pkg_download(readLines("requirements_rlinux.txt"), dest="r-packages-tar", dependencies=TRUE)'
 
     # Step 7: Debugging step: List downloaded package tarballs
     - name: List downloaded R package tar.gz files
