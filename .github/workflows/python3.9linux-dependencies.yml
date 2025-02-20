@@ -21,17 +21,23 @@ jobs:
       with:
         python-version: '3.9'  # Install Python 3.9
 
-    # Step 3: Upgrade pip and install virtualenv
+    # Step 3: Install system dependencies (for packages requiring native dependencies)
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential libssl-dev libffi-dev python3-dev
+
+    # Step 4: Upgrade pip and install virtualenv
     - name: Upgrade pip and install virtualenv
       run: |
         python3 -m pip install --upgrade pip
         python3 -m pip install virtualenv
 
-    # Step 4: Create a virtual environment
+    # Step 5: Create a virtual environment
     - name: Create virtual environment
       run: python3 -m virtualenv venv
 
-    # Step 5: Cache Python dependencies
+    # Step 6: Cache Python dependencies
     - name: Cache Python packages
       uses: actions/cache@v3
       with:
@@ -40,19 +46,16 @@ jobs:
         restore-keys: |
           python-packages-${{ runner.os }}-
 
-    # Step 6: Install dependencies
+    # Step 7: Install dependencies with detailed logs
     - name: Install Python dependencies
       run: |
-        source venv/bin/activate
-        pip install --no-cache-dir -r requirements_pylinux.txt
+        venv/bin/python -m pip install --default-timeout=120 --no-cache-dir -r requirements_pylinux.txt
 
     # Debugging step: Check installed packages
     - name: List installed packages
-      run: |
-        source venv/bin/activate
-        pip list
+      run: venv/bin/python -m pip list
 
-    # Step 7: Upload the virtual environment as an artifact
+    # Step 8: Upload the virtual environment as an artifact
     - name: Upload Python virtual environment
       uses: actions/upload-artifact@v4
       with:
