@@ -1,0 +1,49 @@
+name: R Windows Setup
+
+on:
+  workflow_dispatch:  # Allows manual triggering from GitHub UI
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest  # Uses a Windows runner for the workflow
+
+    steps:
+    # Step 1: Checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    # Step 2: Set up R 4.2.0
+    - name: Set up R 4.2.0
+      uses: r-lib/actions/setup-r@v2
+      with:
+        r-version: '4.2.0'  # Specify the R version
+
+    # Step 3: Create a library directory for R packages
+    - name: Create R package library
+      run: mkdir r-library
+
+    # Step 4: Install and download required R packages
+    - name: Download R packages
+      run: |
+        install.packages("pak", repos = "https://cloud.r-project.org")
+        pak::pkg_install(readLines("requirements_r.txt"), lib = "r-library", dependencies = TRUE)
+      shell: Rscript {0}
+
+    # Step 5: Upload downloaded R packages as an artifact
+    - name: Upload R package library
+      uses: actions/upload-artifact@v4
+      with:
+        name: r-packages
+        path: r-library/
+
+    # Step 6: Commit and push updated requirements_r.txt (if modified)
+    - name: Commit and push updated requirements_r.txt
+      run: |
+        git config --global user.name "d-jllow"
+        git config --global user.email "dos.jllow@gmail.com"
+        git add ./requirements_r.txt
+        git commit -m "Update requirements_r.txt with installed R dependencies"
+        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
