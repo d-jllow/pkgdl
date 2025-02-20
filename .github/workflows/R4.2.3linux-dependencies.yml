@@ -39,9 +39,11 @@ jobs:
         # Install the Apache Arrow C++ development libraries
         sudo apt-get install -y libarrow-dev
   
-    # Step 4: Create a library directory for R packages
-    - name: Create R package library
-      run: mkdir -p r-library
+    # Step 4: Create directories for package library and downloads
+    - name: Create directories
+      run: |
+        mkdir -p r-library
+        mkdir -p r-packages-tar
 
     # Step 5: Cache R packages to speed up future runs
     - name: Cache R packages
@@ -52,19 +54,19 @@ jobs:
         restore-keys: |
           r-packages-${{ runner.os }}-
 
-    # Step 6: Install and download required R packages
-    - name: Download R packages
+    # Step 6: Install pak and download required R packages as tar.gz files
+    - name: Download R packages as tar.gz
       run: |
         Rscript -e 'install.packages("pak", repos="https://cloud.r-project.org")'
-        Rscript -e 'pak::pkg_install(readLines("requirements_rlinux.txt"), lib="r-library", dependencies=TRUE)'
+        Rscript -e 'pak::pkg_download(readLines("requirements_rlinux.txt"), dest="r-packages-tar")'
 
-    # Step 7: Debugging step: Check if the R package library directory contains files
-    - name: List R package library contents
-      run: ls -alh r-library/
+    # Step 7: Debugging step: List downloaded package tarballs
+    - name: List downloaded R package tar.gz files
+      run: ls -alh r-packages-tar/
 
-    # Step 8: Upload downloaded R packages as an artifact
-    - name: Upload R package library
+    # Step 8: Upload downloaded R package tarballs as an artifact
+    - name: Upload R package tar.gz files
       uses: actions/upload-artifact@v4
       with:
-        name: r-packages-linux
-        path: r-library/
+        name: r-packages-tarballs
+        path: r-packages-tar/
