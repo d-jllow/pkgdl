@@ -1,4 +1,4 @@
-name: Python Linux Setup
+name: Python 3.9 Linux Setup
 
 on:
   workflow_dispatch:  # Allows manual triggering from GitHub UI
@@ -19,49 +19,35 @@ jobs:
     - name: Set up Python 3.9
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'  # Install Python 3.9
+        python-version: '3.9'
 
-    # Step 3: Install system dependencies (for packages requiring native dependencies)
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential libssl-dev libffi-dev python3-dev
-
-    # Step 4: Upgrade pip and install virtualenv
-    - name: Upgrade pip and install virtualenv
-      run: |
-        python3 -m pip install --upgrade pip
-        python3 -m pip install virtualenv
-
-    # Step 5: Create a virtual environment
-    - name: Create virtual environment
-      run: python3 -m virtualenv venv
-
-    # Step 6: Cache Python dependencies
-    - name: Cache Python packages
+    # Step 3: Cache Python packages to speed up future runs
+    - name: Cache pip packages
       uses: actions/cache@v3
       with:
-        path: ~/.cache/pip
+        path: pip_packages
         key: python-packages-${{ runner.os }}-${{ hashFiles('requirements_pylinux.txt') }}
         restore-keys: |
           python-packages-${{ runner.os }}-
 
-    # Step 7: Install dependencies with force reinstall and verbose logging
-    - name: Install Python dependencies (Force Install)
+    # Step 4: Download Python dependencies as `.whl` or `.tar.gz`
+    - name: Download Python dependencies
       run: |
-        venv/bin/python -m pip install --force-reinstall --no-cache-dir -r requirements_pylinux.txt -v
+        mkdir -p pip_packages
+        pip download --dest pip_packages -r requirements_pylinux.txt
 
-    # Debugging step: Check installed packages
-    - name: List installed packages
-      run: venv/bin/python -m pip list
+    # Step 5: Install Python dependencies from cached/downloaded files
+    - name: Install Python dependencies
+      run: |
+        pip install --no-index --find-links=pip_packages -r requirements_pylinux.txt
 
-    # Debugging step: Show pip logs for troubleshooting
-    - name: Show pip debug logs
-      run: cat ~/.cache/pip/log/debug.log || echo "No debug log found"
+    # Step 6: Debugging step: Check downloaded `.whl` and `.tar.gz` files
+    - name: List downloaded Python packages
+      run: ls -lh pip_packages/
 
-    # Step 8: Upload the virtual environment as an artifact
-    - name: Upload Python virtual environment
+    # Step 7: Upload downloaded Python packages as an artifact
+    - name: Upload Python package library
       uses: actions/upload-artifact@v4
       with:
-        name: python-venv-linux
-        path: venv/
+        name: python-packages-linux
+        path: pip_packages/
