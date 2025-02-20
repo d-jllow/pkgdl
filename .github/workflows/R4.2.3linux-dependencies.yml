@@ -1,4 +1,4 @@
-name: R Linux Setup
+name: R 4.2.3 Linux Setup
 
 on:
   workflow_dispatch:  # Allows manual triggering from GitHub UI
@@ -19,7 +19,7 @@ jobs:
     - name: Set up R 4.2.3
       uses: r-lib/actions/setup-r@v2
       with:
-        r-version: '4.2.3'  # Install R 4.2.3
+        r-version: '4.2.3'
 
     # Step 3: Install system dependencies for R packages and Apache Arrow
     - name: Install system dependencies and Apache Arrow
@@ -38,7 +38,7 @@ jobs:
 
         # Install the Apache Arrow C++ development libraries
         sudo apt-get install -y libarrow-dev
-
+  
     # Step 4: Create a library directory for R packages
     - name: Create R package library
       run: mkdir -p r-library
@@ -52,23 +52,13 @@ jobs:
         restore-keys: |
           r-packages-${{ runner.os }}-
 
-    # Step 6: Install 'pak' explicitly in the custom library path
-    - name: Install pak
-      run: |
-        Rscript -e '
-          dir.create("r-library", showWarnings = FALSE);
-          .libPaths("r-library");  # Ensure custom library path is used
-          install.packages("pak", lib="r-library", repos="https://cloud.r-project.org")'
-
-    # Step 7: Install required R packages
+    # Step 6: Install and download required R packages
     - name: Download R packages
       run: |
-        Rscript -e '
-          .libPaths("r-library");  # Ensure R recognizes the custom library path
-          library(pak);
-          pak::pkg_install(readLines("requirements_rlinux.txt"), lib="r-library", dependencies=TRUE)'
+        Rscript -e 'install.packages("pak", repos="https://cloud.r-project.org")'
+        Rscript -e 'pak::pkg_install(readLines("requirements_rlinux.txt"), lib="r-library", dependencies=TRUE)'
 
-    # Debugging step: Check if the R package library directory contains files
+    # Step 7: Debugging step: Check if the R package library directory contains files
     - name: List R package library contents
       run: ls -alh r-library/
 
