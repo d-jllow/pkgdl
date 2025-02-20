@@ -46,14 +46,18 @@ jobs:
         restore-keys: |
           python-packages-${{ runner.os }}-
 
-    # Step 7: Install dependencies with detailed logs
-    - name: Install Python dependencies
+    # Step 7: Install dependencies with force reinstall and verbose logging
+    - name: Install Python dependencies (Force Install)
       run: |
-        venv/bin/python -m pip install --default-timeout=120 --no-cache-dir -r requirements_pylinux.txt
+        venv/bin/python -m pip install --force-reinstall --no-cache-dir -r requirements_pylinux.txt -v
 
     # Debugging step: Check installed packages
     - name: List installed packages
       run: venv/bin/python -m pip list
+
+    # Debugging step: Show pip logs for troubleshooting
+    - name: Show pip debug logs
+      run: cat ~/.cache/pip/log/debug.log || echo "No debug log found"
 
     # Step 8: Upload the virtual environment as an artifact
     - name: Upload Python virtual environment
