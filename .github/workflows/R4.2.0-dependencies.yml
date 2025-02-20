@@ -31,9 +31,9 @@ jobs:
     # Step 4: Install and download required R packages as tar.gz files
     - name: Download R packages as tar.gz with dependencies
       run: |
-        Rscript -e 'install.packages("pak", repos="https://cloud.r-project.org")'
-        Rscript -e 'pak::pkg_download(readLines("requirements_r.txt"), dest="r-packages-tar", dependencies=TRUE)'
-      shell: Rscript {0}
+        Rscript -e "install.packages('pak', repos='https://cloud.r-project.org')"
+        Rscript -e "pak::pkg_download(readLines('requirements_r.txt'), dest='r-packages-tar', dependencies=TRUE)"
+      shell: bash
 
     # Step 5: Debugging step: List downloaded package tarballs
     - name: List downloaded R package tar.gz files
