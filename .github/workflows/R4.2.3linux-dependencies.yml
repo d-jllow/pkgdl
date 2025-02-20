@@ -27,11 +27,11 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
         
-        # Add the Arrow GPG key correctly
-        curl -fsSL https://dlcdn.apache.org/arrow/arrow-apt-repository.key | sudo tee /etc/apt/trusted.gpg.d/arrow.asc
+        # Add the Apache Arrow GPG key correctly
+        curl -fsSL https://apache.jfrog.io/artifactory/api/gpg/key/public | sudo tee /etc/apt/trusted.gpg.d/arrow.asc
         
-        # Add Apache Arrow repository
-        echo "deb https://dlcdn.apache.org/arrow/ubuntu/ all main" | sudo tee /etc/apt/sources.list.d/apache-arrow.list
+        # Add the correct Apache Arrow repository URL for Ubuntu
+        echo "deb https://apache.jfrog.io/artifactory/arrow-deb-ubuntu/ all main" | sudo tee /etc/apt/sources.list.d/apache-arrow.list
         
         # Update and install libarrow-dev
         sudo apt-get update
