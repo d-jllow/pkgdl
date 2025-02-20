@@ -27,12 +27,14 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
         
-        # Add Arrow repository for Ubuntu
-        sudo wget -qO - https://dlcdn.apache.org/arrow/arrow-apt-repository.key | sudo apt-key add -
-        sudo apt-add-repository "deb https://dlcdn.apache.org/arrow/ubuntu/ all main"
-        sudo apt-get update
+        # Add the Arrow GPG key correctly
+        curl -fsSL https://dlcdn.apache.org/arrow/arrow-apt-repository.key | sudo tee /etc/apt/trusted.gpg.d/arrow.asc
         
-        # Now install libarrow-dev
+        # Add Apache Arrow repository
+        echo "deb https://dlcdn.apache.org/arrow/ubuntu/ all main" | sudo tee /etc/apt/sources.list.d/apache-arrow.list
+        
+        # Update and install libarrow-dev
+        sudo apt-get update
         sudo apt-get install -y libarrow-dev
 
     # Step 4: Create a library directory for R packages
