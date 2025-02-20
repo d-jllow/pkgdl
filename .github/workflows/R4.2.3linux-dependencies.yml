@@ -23,7 +23,12 @@ jobs:
 
     # Step 3: Install system dependencies for R packages
     - name: Install system dependencies
-      run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev libarrow-dev
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
+        sudo add-apt-repository -y "ppa:apache/arrow"  # Add Apache Arrow PPA
+        sudo apt-get update
+        sudo apt-get install -y libarrow-dev
 
     # Step 4: Create a library directory for R packages
     - name: Create R package library
