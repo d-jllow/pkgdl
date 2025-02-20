@@ -63,7 +63,11 @@ jobs:
           future({
             pak::pkg_install(readLines("requirements_rlinux.txt"), lib="r-library", dependencies=TRUE)
           })'
-      
+
+    # Debugging step: Check if the R package library directory contains files
+    - name: List R package library contents
+      run: ls -alh r-library/
+
     # Step 7: Upload downloaded R packages as an artifact
     - name: Upload R package library
       uses: actions/upload-artifact@v4
