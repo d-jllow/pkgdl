@@ -39,6 +39,7 @@ jobs:
     # Step 5: Install Python dependencies from cached/downloaded files
     - name: Install Python dependencies
       run: |
+        python -m pip install --upgrade pip setuptools wheel
         pip install --no-index --find-links=pip_packages -r requirements_pylinux.txt
 
     # Step 6: Debugging step: Check downloaded `.whl` and `.tar.gz` files
