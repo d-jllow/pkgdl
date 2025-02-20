@@ -1,0 +1,52 @@
+name: R Linux Setup
+
+on:
+  workflow_dispatch:  # Allows manual triggering from GitHub UI
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Use Linux runner
+
+    steps:
+    # Step 1: Checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    # Step 2: Set up R 4.2.3
+    - name: Set up R 4.2.3
+      uses: r-lib/actions/setup-r@v2
+      with:
+        r-version: '4.2.3'  # Install R 4.2.3
+
+    # Step 3: Install system dependencies for R packages
+    - name: Install system dependencies
+      run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
+
+    # Step 4: Create a library directory for R packages
+    - name: Create R package library
+      run: mkdir -p r-library
+
+    # Step 5: Install and download required R packages
+    - name: Download R packages
+      run: |
+        Rscript -e 'install.packages("pak", repos="https://cloud.r-project.org")'
+        Rscript -e 'pak::pkg_install(readLines("requirements_rlinux.txt"), lib="r-library", dependencies=TRUE)'
+
+    # Step 6: Upload downloaded R packages as an artifact
+    - name: Upload R package library
+      uses: actions/upload-artifact@v4
+      with:
+        name: r-packages-linux
+        path: r-library/
+
+    # Step 7: Commit and push updated requirements_rlinux.txt (optional)
+    - name: Commit and push updated requirements_rlinux.txt
+      run: |
+        git config --global user.name "d-jllow"
+        git config --global user.email "dos.jllow@gmail.com"
+        git add ./requirements_rlinux.txt
+        git commit -m "Update requirements_rlinux.txt with installed R dependencies"
+        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
