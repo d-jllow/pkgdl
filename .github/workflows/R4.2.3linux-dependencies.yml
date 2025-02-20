@@ -52,20 +52,27 @@ jobs:
         restore-keys: |
           r-packages-${{ runner.os }}-
 
-    # Step 6: Install and download required R packages (Fixed)
+    # Step 6: Install 'pak' explicitly in the custom library path
+    - name: Install pak
+      run: |
+        Rscript -e '
+          dir.create("r-library", showWarnings = FALSE);
+          .libPaths("r-library");  # Ensure custom library path is used
+          install.packages("pak", lib="r-library", repos="https://cloud.r-project.org")'
+
+    # Step 7: Install required R packages
     - name: Download R packages
       run: |
         Rscript -e '
-          install.packages("pak", repos="https://cloud.r-project.org");
-          dir.create("r-library", showWarnings = FALSE);
           .libPaths("r-library");  # Ensure R recognizes the custom library path
-          pak::pkg_install(readLines("requirements_rlinux.txt"), dependencies=TRUE)'
-    
+          library(pak);
+          pak::pkg_install(readLines("requirements_rlinux.txt"), lib="r-library", dependencies=TRUE)'
+
     # Debugging step: Check if the R package library directory contains files
     - name: List R package library contents
       run: ls -alh r-library/
 
-    # Step 7: Upload downloaded R packages as an artifact
+    # Step 8: Upload downloaded R packages as an artifact
     - name: Upload R package library
       uses: actions/upload-artifact@v4
       with:
