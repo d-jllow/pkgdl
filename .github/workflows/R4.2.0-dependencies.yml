@@ -38,12 +38,3 @@ jobs:
       with:
         name: r-packages
         path: r-library/
-
-    # Step 6: Commit and push updated requirements_r.txt (if modified)
-    - name: Commit and push updated requirements_r.txt
-      run: |
-        git config --global user.name "d-jllow"
-        git config --global user.email "dos.jllow@gmail.com"
-        git add ./requirements_r.txt
-        git commit -m "Update requirements_r.txt with installed R dependencies"
-        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
