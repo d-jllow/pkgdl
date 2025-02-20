@@ -47,12 +47,3 @@ jobs:
       with:
         name: python-packages
         path: wheelhouse/
-
-    # Step 7: Commit and push updated requirements.txt (optional)
-    - name: Commit and push updated requirements_py.txt
-      run: |
-        git config --global user.name "d-jllow"
-        git config --global user.email "dos.jllow@gmail.com"
-        git add ./requirements_py.txt
-        git commit -m "Update requirements_py.txt with installed dependencies"
-        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
