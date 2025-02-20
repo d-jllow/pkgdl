@@ -21,20 +21,29 @@ jobs:
       with:
         r-version: '4.2.0'  # Specify the R version
 
-    # Step 3: Create a library directory for R packages
-    - name: Create R package library
-      run: mkdir r-library
-
-    # Step 4: Install and download required R packages
-    - name: Download R packages
+    # Step 3: Create directories for package library and downloads
+    - name: Create directories
       run: |
-        install.packages("pak", repos = "https://cloud.r-project.org")
-        pak::pkg_install(readLines("requirements_r.txt"), lib = "r-library", dependencies = TRUE)
+        mkdir r-library
+        mkdir r-packages-tar
+      shell: bash
+
+    # Step 4: Install and download required R packages as tar.gz files
+    - name: Download R packages as tar.gz with dependencies
+      run: |
+        Rscript -e 'install.packages("pak", repos="https://cloud.r-project.org")'
+        Rscript -e 'pak::pkg_download(readLines("requirements_r.txt"), dest="r-packages-tar", dependencies=TRUE)'
       shell: Rscript {0}
 
-    # Step 5: Upload downloaded R packages as an artifact
-    - name: Upload R package library
+    # Step 5: Debugging step: List downloaded package tarballs
+    - name: List downloaded R package tar.gz files
+      run: |
+        dir r-packages-tar
+      shell: powershell
+
+    # Step 6: Upload downloaded R package tarballs as an artifact
+    - name: Upload R package tar.gz files
       uses: actions/upload-artifact@v4
       with:
-        name: r-packages
-        path: r-library/
+        name: r-packages-tarballs
+        path: r-packages-tar/
