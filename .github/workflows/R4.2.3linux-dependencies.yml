@@ -38,7 +38,7 @@ jobs:
 
         # Install the Apache Arrow C++ development libraries
         sudo apt-get install -y libarrow-dev
-
+  
     # Step 4: Create a library directory for R packages
     - name: Create R package library
       run: mkdir -p r-library
@@ -56,7 +56,6 @@ jobs:
     - name: Download R packages (Parallelized)
       run: |
         Rscript -e '
-          options(pkgType = "binary");
           install.packages("pak", repos="https://cloud.r-project.org");
           install.packages("future", repos="https://cloud.r-project.org");
           library(future);
@@ -64,7 +63,7 @@ jobs:
           future({
             pak::pkg_install(readLines("requirements_rlinux.txt"), lib="r-library", dependencies=TRUE)
           })'
-
+      
     # Step 7: Upload downloaded R packages as an artifact
     - name: Upload R package library
       uses: actions/upload-artifact@v4
