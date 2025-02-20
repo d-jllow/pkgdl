@@ -17,42 +17,44 @@ jobs:
 
     # Step 2: Set up Python 3.9
     - name: Set up Python 3.9
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
+        python-version: '3.9'  # Install Python 3.9
 
-    # Step 3: Create virtual environment
+    # Step 3: Upgrade pip and install virtualenv
+    - name: Upgrade pip and install virtualenv
+      run: |
+        python3 -m pip install --upgrade pip
+        python3 -m pip install virtualenv
+
+    # Step 4: Create a virtual environment
     - name: Create virtual environment
+      run: python3 -m virtualenv venv
+
+    # Step 5: Cache Python dependencies
+    - name: Cache Python packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: python-packages-${{ runner.os }}-${{ hashFiles('requirements_pylinux.txt') }}
+        restore-keys: |
+          python-packages-${{ runner.os }}-
+
+    # Step 6: Install dependencies
+    - name: Install Python dependencies
       run: |
-        if [ -d "venv" ]; then
-          rm -rf venv  # Delete existing virtual environment if present
-        fi
-        python3 -m venv venv
         source venv/bin/activate
+        pip install --no-cache-dir -r requirements_pylinux.txt
 
-    # Step 4: Debug - List directory structure
-    - name: List directory structure
-      run: ls -R
-
-    # Step 5: Download Python packages instead of installing them
-    - name: Download Python packages
+    # Debugging step: Check installed packages
+    - name: List installed packages
       run: |
         source venv/bin/activate
-        mkdir -p wheelhouse
-        pip download -r requirements_pylinux.txt --dest=wheelhouse
+        pip list
 
-    # Step 6: Upload downloaded Python packages as an artifact
-    - name: Upload wheelhouse
+    # Step 7: Upload the virtual environment as an artifact
+    - name: Upload Python virtual environment
       uses: actions/upload-artifact@v4
       with:
-        name: python-packages-linux
-        path: wheelhouse/
-
-    # Step 7: Commit and push updated requirements_pylinux.txt (optional)
-    - name: Commit and push updated requirements_pylinux.txt
-      run: |
-        git config --global user.name "d-jllow"
-        git config --global user.email "dos.jllow@gmail.com"
-        git add ./requirements_pylinux.txt
-        git commit -m "Update requirements_pylinux.txt with installed Python dependencies"
-        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
+        name: python-venv-linux
+        path: venv/
